@@ -1,3 +1,12 @@
+2015-12-08
+
+Mike Brown: Diverge from mainstream puppetlabs-mysql
+Cherrypicked https://github.com/puppetlabs/puppetlabs-mysql/pull/384
+
+Summary:
+
+Provides "REQUIRE" support for mysql user GRANTS, specifically to allow "REQUIRE SSL" statements.
+
 ##2015-02-09 - Supported Release 3.2.0
 ###Summary
 This release includes several new features and bugfixes, including support for various plugins, making the output from mysql_password more consistent when input is empty and improved username validation.
