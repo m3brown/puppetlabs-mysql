@@ -1,11 +1,79 @@
-2015-12-08
+## 2016-05-09 - Add hiera_hash support for users, grants, and databases
 
+### Summary:
+
+Our use case involves production and test environments that have slightly
+different user, grant, and database definitions.  One blocker was that our
+prod environment had users (and therefore grants) that were not supposed to
+exist in test.  My preference was to define the common users and grants in
+a shared hiera file, and the unique elements in a prod-only hiera file.
+
+Making the above happen requires the usage of "hiera_hash", which combines
+multiple hashes of the same name in a hiera hierarchy into one hash.
+
+## 2015-12-08 - Cherry Pick by Mike Brown
+
+Cloned from: https://github.com/m3brown/puppetlabs-mysql/commit/e60ac82741c057d1e840c11ce40ae91d26d9dc2c
 Mike Brown: Diverge from mainstream puppetlabs-mysql
 Cherrypicked https://github.com/puppetlabs/puppetlabs-mysql/pull/384
 
-Summary:
+### Summary:
 
 Provides "REQUIRE" support for mysql user GRANTS, specifically to allow "REQUIRE SSL" statements.
+
+### Quick guide for future upgrades:
+
+If you need to update the version of puppetlabs-mysql to a version > 3.6.2, you will need to reapply this cherrypick.
+
+Unfortunately `git cherry-pick <hash for PR 384>` does not work, I think it has to do with the fact that the submitters fork was deleted.
+
+#### Procedure for updating puppetlabs-mysql:
+
+- Download a fresh clone of the repo:
+
+    ```shell
+    git clone https://github.com/puppetlabs/puppetlabs-mysql mysql-new
+    ```
+- cd to mysql-new
+- Checkout the release you want to use:
+
+    ```shell
+    git checkout -b mysql-3.6.2 3.6.2
+    ```
+- Download the PR in diff form:
+
+    ```shell
+    curl -L https://github.com/puppetlabs/puppetlabs-mysql/pull/384.diff > 384.diff
+    ```
+- Apply the diff, and notice that the merge fails
+
+   ```shell
+   git apply 384.diff
+   ```
+   - Conflicts are expected as the code as of 384 is not in sync with the latest repo.
+   - Recall how diff patching works:  There are 3 lines above and below each code change, which tells the patch tool where to merge.  You need to edit 384.diff so that the "3 lines above and below" match the current release you checked out.
+   - Keep running `git apply 384.diff` until it merges cleanly
+
+- Remove the mysql-new/.git directory to "un-git-clone-ify" the directory so it can integrate properly with three-puppeteers/puppet/third_party_modules
+
+- Replace the old mysql directory with the new one
+
+   ```shell
+   mv three-puppeteers/puppet/third_party_modules/mysql mysql-old
+   mv mysql-new three-puppeteers/third_party_modules/mysql
+   ```
+
+- At this point `git diff` should show a massive amount of changes.  These changes are the diff between the old version of puppetlabs-mysql and the new version.
+
+- Copy and paste this guide to the top of the new puppet-labs/mysql CHANGELOG.md failure
+
+- Commit the changes and push!
+
+   ```shell
+   git add --all puppet/third_party_modules/mysql
+   git commit
+   ```
+
 
 ## Supported Release 3.6.2
 ###Summary

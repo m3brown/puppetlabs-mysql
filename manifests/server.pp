@@ -21,15 +21,37 @@ class mysql::server (
   $service_provider        = $mysql::params::server_service_provider,
   $create_root_user        = $mysql::params::create_root_user,
   $create_root_my_cnf      = $mysql::params::create_root_my_cnf,
-  $users                   = {},
-  $grants                  = {},
-  $databases               = {},
+  $users_hash              = {},
+  $grants_hash             = {},
+  $databases_hash          = {},
+#  $users                   = {},
+#  $grants                  = {},
+#  $databases               = {},
 
   # Deprecated parameters
   $enabled                 = undef,
   $manage_service          = undef,
   $old_root_password       = undef
 ) inherits mysql::params {
+
+  # use hash merge to increase flexibility of defining mysql users, grants, and databases
+  $hiera_users_hash = hiera_hash("mysql::server::users", undef)
+  $users = $hiera_users_hash ? {
+    undef => $users_hash,
+    default => $hiera_users_hash,
+  }
+  $hiera_grants_hash = hiera_hash("mysql::server::grants", undef)
+  $grants = $hiera_grants_hash ? {
+    undef => $grants_hash,
+    default => $hiera_grants_hash,
+  }
+  $hiera_databases_hash = hiera_hash("mysql::server::databases", undef)
+  $databases = $hiera_databases_hash ? {
+    undef => $databases_hash,
+    default => $hiera_databases_hash,
+  }
+
+
 
   # Deprecated parameters.
   if $enabled {
