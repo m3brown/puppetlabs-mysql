@@ -1,3 +1,14 @@
+## 2016-12-20 - Bugfix to support Puppet 4
+
+### Summary:
+
+The grant_require functionality does not work as intended in Puppet 4, it
+throw an error if the regex does not match a string
+
+Failed to apply catalog: undefined method 'captures' for nil:NilClass
+
+Improving the regex appears to resolve the issue.
+
 ## 2016-05-09 - Add hiera_hash support for users, grants, and databases
 
 ### Summary:

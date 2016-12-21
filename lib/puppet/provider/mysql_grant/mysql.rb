@@ -49,7 +49,7 @@ Puppet::Type.type(:mysql_grant).provide(:mysql, :parent => Puppet::Provider::Mys
           options = ['GRANT'] if rest.match(/WITH\sGRANT\sOPTION/)
 
           # Get all REQUIRE options.
-          grant_require = rest.match(/REQUIRE\s(.*)\sWITH/).captures if rest.include?('REQUIRE')
+          grant_require = rest.match(/REQUIRE\s(.*)/).captures if rest.include?('REQUIRE')
 
           # fix double backslash that MySQL prints, so resources match
           table.gsub!("\\\\", "\\")
